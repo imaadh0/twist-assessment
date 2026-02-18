@@ -6,8 +6,8 @@ import { env } from '../config/env';
 const COOKIE_OPTIONS = {
     httpOnly: true,
     secure: env.NODE_ENV === 'production',
-    sameSite: 'strict' as const,
-    path: '/api/auth/refresh',
+    sameSite: 'lax' as const,
+    path: '/api/auth',
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 
@@ -73,8 +73,8 @@ export async function logout(req: AuthRequest, res: Response, next: NextFunction
         res.clearCookie('refreshToken', {
             httpOnly: true,
             secure: env.NODE_ENV === 'production',
-            sameSite: 'strict' as const,
-            path: '/api/auth/refresh',
+            sameSite: 'lax' as const,
+            path: '/api/auth',
         });
 
         res.json({ success: true, message: 'Logged out' });
