@@ -74,7 +74,7 @@ export default function TaskCard({ task, onToggle, onEdit, onDelete }: TaskCardP
                 </div>
 
                 {/* actions */}
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity focus-within:opacity-100">
+                <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity focus-within:opacity-100">
                     <button
                         onClick={() => onEdit(task.id)}
                         className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
