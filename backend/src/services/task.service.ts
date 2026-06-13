@@ -1,13 +1,51 @@
+import { Prisma } from '@prisma/client';
 import db from '../config/db';
 import { ApiError } from '../utils/ApiError';
-import { CreateTaskInput, UpdateTaskInput } from '../types';
+import { CreateTaskInput, TaskListQuery, UpdateTaskInput } from '../types';
 
 export class TaskService {
-    async getAll(userId: string) {
+    async getAll(userId: string, filters: TaskListQuery = {}) {
+        const now = new Date();
+        const where: Prisma.TaskWhereInput = {
+            userId,
+            ...(filters.status === 'completed' && { completed: true }),
+            ...(filters.status === 'pending' && { completed: false }),
+            ...(filters.priority && { priority: filters.priority }),
+            ...(filters.q && {
+                OR: [
+                    { title: { contains: filters.q, mode: 'insensitive' } },
+                    { description: { contains: filters.q, mode: 'insensitive' } },
+                ],
+            }),
+            ...(filters.due === 'overdue' && {
+                completed: false,
+                dueDate: { lt: now },
+            }),
+            ...(filters.due === 'upcoming' && {
+                completed: false,
+                dueDate: { gte: now },
+            }),
+            ...(filters.due === 'no-date' && { dueDate: null }),
+        };
+
         return db.task.findMany({
-            where: { userId },
-            orderBy: { createdAt: 'desc' },
+            where,
+            orderBy: this.getTaskOrder(filters.sort),
         });
+    }
+
+    private getTaskOrder(sort: TaskListQuery['sort']): Prisma.TaskOrderByWithRelationInput[] {
+        switch (sort) {
+            case 'created-asc':
+                return [{ createdAt: 'asc' }];
+            case 'due-asc':
+                return [{ dueDate: 'asc' }, { createdAt: 'desc' }];
+            case 'priority-desc':
+                return [{ priority: 'desc' }, { dueDate: 'asc' }, { createdAt: 'desc' }];
+            case 'created-desc':
+            default:
+                return [{ createdAt: 'desc' }];
+        }
     }
 
     async getById(taskId: string, userId: string) {

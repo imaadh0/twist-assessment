@@ -1,4 +1,25 @@
-import { body } from 'express-validator';
+import { body, query } from 'express-validator';
+
+export const listTasksValidation = [
+    query('q')
+        .optional()
+        .isLength({ max: 120 }).withMessage('Search query must be under 120 characters')
+        .trim()
+        .escape(),
+    query('status')
+        .optional()
+        .isIn(['completed', 'pending']).withMessage('Status must be completed or pending'),
+    query('priority')
+        .optional()
+        .isIn(['low', 'medium', 'high']).withMessage('Priority must be low, medium, or high'),
+    query('due')
+        .optional()
+        .isIn(['overdue', 'upcoming', 'no-date']).withMessage('Due filter must be overdue, upcoming, or no-date'),
+    query('sort')
+        .optional()
+        .isIn(['created-desc', 'created-asc', 'due-asc', 'priority-desc'])
+        .withMessage('Sort must be created-desc, created-asc, due-asc, or priority-desc'),
+];
 
 export const createTaskValidation = [
     body('title')

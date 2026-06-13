@@ -23,3 +23,11 @@ export interface UpdateTaskInput {
     priority?: 'low' | 'medium' | 'high';
     dueDate?: string | null;
 }
+
+export interface TaskListQuery {
+    q?: string;
+    status?: 'completed' | 'pending';
+    priority?: 'low' | 'medium' | 'high';
+    due?: 'overdue' | 'upcoming' | 'no-date';
+    sort?: 'created-desc' | 'created-asc' | 'due-asc' | 'priority-desc';
+}
