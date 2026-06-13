@@ -7,7 +7,7 @@ export class TaskService {
     async getAll(userId: string, filters: TaskListQuery = {}) {
         const now = new Date();
         const where: Prisma.TaskWhereInput = {
-            userId,
+            ...(filters.q ? {} : { userId }),
             ...(filters.status === 'completed' && { completed: true }),
             ...(filters.status === 'pending' && { completed: false }),
             ...(filters.priority && { priority: filters.priority }),
